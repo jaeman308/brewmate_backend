@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const testJWTROUTER = require('./controllers/test-jwt')
+const usersRouter = require('./controllers/users');
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -13,6 +14,7 @@ mongoose.connection.on('connected', () => {
 
 app.use(express.json());
 app.use('/test-jwt', testJWTROUTER);
+app.use('/users', usersRouter);
 //Routes
 
 
