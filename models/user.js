@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     username: {
         type: String, 
-        unique : true,
+        unique: true,
         required: true,
     }, 
     email: {
@@ -12,15 +12,14 @@ const userSchema = new mongoose.Schema({
     },
     hashedPassword: {
         type: String, 
-        reuired: true,
+        required: true,
 
     },
 });
 
 userSchema.set('toJSON', {
     transform: (document, returnedObject) =>{
-        delete returnedOblect.hashedPassword;
+        delete returnedObject.hashedPassword;
     }
 });
-
 module.exports = mongoose.model('User', userSchema);
