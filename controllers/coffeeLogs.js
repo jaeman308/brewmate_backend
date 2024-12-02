@@ -21,6 +21,18 @@ router.post('/', async (req, res) => {
         res.status(500).json(error);
     }
 
-})
+}); 
+
+router.get('/', async (req, res) => {
+    try{
+        const coffeelogs = await CoffeeLog.find({})
+        .populate('author')
+        .sort({createdAT: 'desc'});
+        res.status(200).json(coffeelogs);
+    }catch (error) {
+        res.status(500).json(error)
+    }
+});
+
 
 module.exports = router;
