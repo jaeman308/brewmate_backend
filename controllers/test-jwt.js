@@ -10,7 +10,7 @@ router.get('/sign-token', (req, res) => {
         email: 'test@example.com'
     };
     const token = jwt.sign({ user }, process.env.JWT_SECRET);
-    res.json({token})
+    res.json({token});
 });
 
 router.post('/verify-token', (req, res) => {

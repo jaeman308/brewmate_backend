@@ -22,4 +22,5 @@ userSchema.set('toJSON', {
         delete returnedObject.hashedPassword;
     }
 });
+
 module.exports = mongoose.model('User', userSchema);

@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
 
-const coffeeBeanchema = new mongoose.Schema({
+const coffeeBeanSchema = new mongoose.Schema({
     title: {
         type:String, 
         reqquired: true,
@@ -19,11 +19,11 @@ const coffeeBeanchema = new mongoose.Schema({
 
 
 const coffeeShopSchema = new mongoose.Schema({
-    shopName: {
+    shopname: {
         type: String,
         required: true,
     },
-    priceRange: {
+    pricerange: {
         type: String, 
         required: true, 
         enum: ['$', '$$', '$$$', '$$$$', '$$$$$'],
@@ -39,7 +39,7 @@ const coffeeShopSchema = new mongoose.Schema({
 });
 
 const coffeeRecipesSchema = new mongoose.Schema({
-    tite: {
+    title: {
         type: String,
         required: true,
     },
@@ -65,7 +65,7 @@ const notesSchema = new mongoose.Schema(
         type: String,
         required: true
     },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     },
     { timestamps: true }
 )
@@ -81,10 +81,10 @@ const coffeeLogSchema = new mongoose.Schema(
         require: true,
         enum: ['Coffee Beans', 'Coffee Shops', 'Recipes'],
     },
-    coffeeBeans: [coffeeBeanchema],
+    coffeeBeans: [coffeeBeanSchema],
     coffeeShop: [coffeeShopSchema],
     coffeeRecipes: [coffeeRecipesSchema],
-    author:{typ: mongoose.Schema.Types.ObjectId, ref:'User'},
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     notes: [notesSchema],
     },
     {timestamps : true}
