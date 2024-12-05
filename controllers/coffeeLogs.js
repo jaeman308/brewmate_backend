@@ -12,7 +12,7 @@ router.post('/', async (req, res) => {
     try{
         req.body.author = req.user._id
         const coffeeLog = await CoffeeLog.create(req.body);
-        coffeelog._doc.author = req.user;
+        coffeeLog._doc.author = req.user;
         // console.log(coffeelog._doc)
         res.status(200).json(coffeeLog)
 
@@ -25,9 +25,17 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try{
-        const coffeeLogs = await CoffeeLog.find({})
-        .populate('author')
-        .sort({createdAT: 'desc'});
+        const { category } = req.query;
+        let coffeeLogs;
+        if (category) {
+            coffeeLogs = await CoffeeLog.find({'category': category})
+            .populate('author')
+            .sort({createdAT: 'desc'});
+        } else {
+            coffeeLogs = await CoffeeLog.find({})
+            .populate('author')
+            .sort({createdAt: 'desc'})
+        }
         res.status(200).json(coffeeLogs);
     }catch (error) {
         res.status(500).json(error)
@@ -78,8 +86,23 @@ router.delete('/:coffeelogId', async (req,res) => {
     }
 });
 
+router.post('/:coffeelogId/notes', async (req, res) => {
+    try{
+        req.body.author = req.user._id;
+        const coffeeLog = await CoffeeLog.findById(req.params.coffeelogId);
+        coffeeLog.notes.push(req.body);
+        await coffeeLog.save();
 
+        const newNote = coffeeLog.notes[coffeeLog.notes.length -1];
 
+        newNote._doc.author = req.user;
+        
+        res.status(201).json
+
+    }catch (error) {
+        res.status(500).json(error)
+    }
+});
 
 
 
