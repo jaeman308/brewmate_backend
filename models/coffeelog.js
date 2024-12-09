@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const coffeeBeanSchema = new mongoose.Schema({
     title: {
-        type:String, 
+        type: String, 
         reqquired: true,
     }, 
     location: {
@@ -19,6 +19,10 @@ const coffeeBeanSchema = new mongoose.Schema({
 
 
 const coffeeShopSchema = new mongoose.Schema({
+    title: {
+        type: String, 
+        reqquired: true,
+    }, 
     shopname: {
         type: String,
         required: true,
@@ -72,23 +76,31 @@ const notesSchema = new mongoose.Schema(
 
 const coffeeLogSchema = new mongoose.Schema(
     {
-    title: {
-        type: String,
-        required: true,
+        title: {
+            type: String,
+            required: true,
+        },
+        category: {
+            type: String, 
+            required: true,
+            enum: ['Coffee Beans', 'Coffee Shops', 'Coffee Recipes'],
+        },
+        coffeeBeans: {
+            type: coffeeBeanSchema,
+            default: null,
+        },
+        coffeeShops: {
+            type: coffeeShopSchema,
+            default: null,
+        },
+        coffeeRecipes: {
+            type: coffeeRecipesSchema,
+            default: null,
+        },
+        author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        notes: [notesSchema],
     },
-    category: {
-        type: String, 
-        require: true,
-        enum: ['Coffee Beans', 'Coffee Shops', 'Recipes'],
-    },
-    coffeeBeans: [coffeeBeanSchema],
-    coffeeShop: [coffeeShopSchema],
-    coffeeRecipes: [coffeeRecipesSchema],
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    notes: [notesSchema],
-    },
-    {timestamps : true}
-
+    { timestamps: true }
 );
 
 

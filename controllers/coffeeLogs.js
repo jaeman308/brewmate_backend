@@ -8,14 +8,44 @@ const router = express.Router();
 // ================== Protected Routes ====================
 router.use(verifyToken); 
 
+const validCategories =['Coffee Beans', 'Coffee Shops', 'Coffee Recipes'];
+console.log("Valid categories:", validCategories);
+
 router.post('/', async (req, res) => {
     try{
         req.body.author = req.user._id
+        switch (req.body.category){
+            case 'Coffee Beans':
+                if(!req.body.location || !req.body.description){
+                    return res.status(400).json({message:'Location and description are required for CoffeeBeans.'});
+                }
+                req.body.coffeeBeans = {location: req.body.location, description: req.body.description};
+                break;
+            case 'Coffee Shops':
+                if(!req.body.shopname || !req.body.pricerange || !req.body.address || !req.body.description) {
+                    return res.status(400).json({message: 'Shop name, price range, address and description are required.'});
+                }
+                req.body.coffeeShops = {
+                    shopname: req.body.shopname,
+                    pricerange: req.body.pricerange,
+                    address: req.body.address,
+                    description: req.body.description
+                };
+                break;
+            case 'Coffee Recipes':
+                if(!req.body.title || !req.body.ingredients || !req.body.type){
+                    return res.status(400).json({message: 'Title, ingredients and type are required for Coffee Recipes.'});
+                }
+                req.body.coffeeRecipes = { title: req.body.title, ingredients: req.body.ingredients, type: req.body.type};
+                break;
+                
+            default: 
+            return res.status(400).json({message: 'Invalid category'});
+        }
         const coffeeLog = await CoffeeLog.create(req.body);
         coffeeLog._doc.author = req.user;
-        // console.log(coffeelog._doc)
-        res.status(200).json(coffeeLog)
-
+        res.status(200).json(coffeeLog);
+       
     }catch (error) {
         console.log(error);
         res.status(500).json(error);
@@ -23,17 +53,26 @@ router.post('/', async (req, res) => {
 
 }); 
 
-router.get('/', async (req, res) => {
+
+router.get('/:category', async (req, res) => {
     try{
-        const { category } = req.query;
+        const { category } = req.params;
+        console.log("Recieved category in backend:", category);
+
+        if (category && !validCategories.includes(category)) {
+            return res.status(400).json({ error: 'Invalid category' });
+        }
         let coffeeLogs;
         if (category) {
-            coffeeLogs = await CoffeeLog.find({'category': category})
+            console.log("Fetching logs for category:", category)
+            coffeeLogs = await CoffeeLog.find({category})
             .populate('author')
-            .sort({createdAT: 'desc'});
+            .populate('notes.author')
+            .sort({createdAt: 'desc'});
         } else {
             coffeeLogs = await CoffeeLog.find({})
             .populate('author')
+            .populate('notes.author')
             .sort({createdAt: 'desc'})
         }
         res.status(200).json(coffeeLogs);
@@ -42,9 +81,9 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:coffeeLogId', async (req, res) => {
+router.get('/:coffeelogId', async (req, res) => {
     try {
-        const coffeeLog = await CoffeeLog.findById(req.params.coffeeLogId).populate(['author', 'notes.author']);
+        const coffeeLog = await CoffeeLog.findById(req.params.coffeelogId).populate(['author', 'notes.author']);
         res.status(200).json(coffeeLog);
     }catch (error) {
         res.status(500).json(error)
@@ -97,8 +136,7 @@ router.post('/:coffeelogId/notes', async (req, res) => {
 
         newNote._doc.author = req.user;
         
-        res.status(201).json
-
+        res.status(201).json(newNote)
     }catch (error) {
         res.status(500).json(error)
     }
