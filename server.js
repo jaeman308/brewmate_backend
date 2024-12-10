@@ -15,6 +15,8 @@ mongoose.connection.on('connected', () => {
     console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
 });
 
+const port = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());
 
@@ -24,6 +26,6 @@ app.use('/profiles', profilesRouter);
 app.use('/coffeelogs', coffeelogsRouter);
 
 
-app.listen(3000, () => {
-    console.log('The express app is ready!');
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
