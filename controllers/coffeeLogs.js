@@ -77,12 +77,31 @@ router.put('/:coffeelogId', async (req, res) => {
         if (!coffeeLog.author.equals(req.user._id)) {
             return res.status(403).send("You don't have access to do that.");
         }
+
+        // Handle category-specific fields
+        switch (req.body.category) {
+            case 'Coffee Beans':
+                req.body.coffeeBeans = { location: req.body.location, description: req.body.description };
+                break;
+            case 'Coffee Shops':
+                req.body.coffeeShops = {
+                    shopname: req.body.shopname,
+                    pricerange: req.body.pricerange,
+                    address: req.body.address,
+                    description: req.body.description
+                };
+                break;
+            case 'Coffee Recipes':
+                req.body.coffeeRecipes = { title: req.body.title, ingredients: req.body.ingredients, type: req.body.type };
+                break;
+        }
+
         const updatedCoffeeLog = await CoffeeLog.findByIdAndUpdate(
             req.params.coffeelogId,
             req.body,
             { new: true }
-        );
-        updatedCoffeeLog._doc.author = req.user;
+        ).populate('author');
+
         res.status(200).json(updatedCoffeeLog);
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error });
